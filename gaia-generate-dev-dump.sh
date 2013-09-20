@@ -40,7 +40,7 @@ if [[ "$1" ]];then
     echo "- Caricamento DUMP originale in memoria..."
     mysql -u root --password="$mypassword" $db < $1
 
-    echo "- Scambio i nomi..."
+    echo "- Oscuro i nomi..."
     echo "UPDATE anagrafica SET nome = CONCAT('Nome ', id)  WHERE admin = 0 OR admin IS NULL"  | mysql -u root --password="$mypassword" $db
 
     echo "- Oscuro i cognomi..."
@@ -55,8 +55,8 @@ if [[ "$1" ]];then
     echo "- Oscuro le email..."
     echo "UPDATE anagrafica SET email = CONCAT('XXX', RIGHT(email, length(email)-3)) WHERE admin = 0 OR admin IS NULL"  | mysql -u root --password="$mypassword" $db
 
-    echo "- Scambio dettagli anagrafici..."
-    echo "UPDATE dettagliPersona SET valore = CONCAT(nome, id) WHERE id NOT IN (SELECT id FROM anagrafica WHERE admin > 0)"  | mysql -u root --password="$mypassword" $db
+    echo "- Oscuro dettagli anagrafici..."
+    echo "UPDATE dettagliPersona SET valore = CONCAT(nome, id) WHERE id NOT IN (SELECT id FROM anagrafica WHERE admin > 0) AND valore <> '' AND valore NOT REGEXP '[0-9]+';"  | mysql -u root --password="$mypassword" $db
 
     echo "- Oscuro il sesso..."
     echo "UPDATE anagrafica SET sesso = 0  WHERE admin = 0 OR admin IS NULL"  | mysql -u root --password="$mypassword" $db
