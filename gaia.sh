@@ -101,13 +101,19 @@ if [[ "$1" = "install" ]];then
         echo "FLUSH PRIVILEGES;" | mysql -u root --password=$pmysql
         echo "Importazione database..."
         cat core/conf/gaia.sql | mysql -u gaia --password=$pmysql --database=gaia
-        # creazione primo comitato di esempio altrimenti è un casino!
-        cat "INSERT INTO `gaia`.`nazionali` (`id`, `nome`, `geo`) VALUES ('1', 'Comitato Nazionale', GeomFromText('POINT(1 2)',0));" | mysql -u gaia --password=$pmysql --database=gaia
-        cat "INSERT INTO `gaia`.`regionali` (`id`, `nome`, `geo`, `nazionale`) VALUES ('1', 'Regionale prova', GeomFromText('POINT(1 2)',0), '1');" | mysql -u gaia --password=$pmysql --database=gaia
-        cat "INSERT INTO `gaia`.`provinciali` (`id`, `nome`, `geo`, `regionale`) VALUES ('1', 'provinciale di prova', GeomFromText('POINT(1 2)',0), '1');" | mysql -u gaia --password=$pmysql --database=gaia
-        cat "INSERT INTO `gaia`.`locali` (`id`, `nome`, `geo`, `provinciale`) VALUES ('1', 'locale di prova', GeomFromText('POINT(1 2)',0), '1');" | mysql -u gaia --password=$pmysql --database=gaia
-        cat "INSERT INTO `gaia`.`comitati` (`id`, `nome`, `colore`, `locale`, `geo`, `principale`) VALUES ('1', 'comitato locale di prova', NULL, '1', GeomFromText('POINT(1 2)',0), '1');" | mysql -u gaia --password=$pmysql --database=gaia
-        #
+        
+        echo " "
+        echo "Vuoi installare i dati di esempio o ti arrangi a manina? [s]/n"
+        read -n 1 -s datiesempio
+        if [[ "$datiesempio" = "s" ]];then
+                # creazione primo comitato di esempio altrimenti è un casino!
+                cat "INSERT INTO `gaia`.`nazionali` (`id`, `nome`, `geo`) VALUES ('1', 'Comitato Nazionale', GeomFromText('POINT(1 2)',0));" | mysql -u gaia --password=$pmysql --database=gaia
+                cat "INSERT INTO `gaia`.`regionali` (`id`, `nome`, `geo`, `nazionale`) VALUES ('1', 'Regionale prova', GeomFromText('POINT(1 2)',0), '1');" | mysql -u gaia --password=$pmysql --database=gaia
+                cat "INSERT INTO `gaia`.`provinciali` (`id`, `nome`, `geo`, `regionale`) VALUES ('1', 'provinciale di prova', GeomFromText('POINT(1 2)',0), '1');" | mysql -u gaia --password=$pmysql --database=gaia
+                cat "INSERT INTO `gaia`.`locali` (`id`, `nome`, `geo`, `provinciale`) VALUES ('1', 'locale di prova', GeomFromText('POINT(1 2)',0), '1');" | mysql -u gaia --password=$pmysql --database=gaia
+                cat "INSERT INTO `gaia`.`comitati` (`id`, `nome`, `colore`, `locale`, `geo`, `principale`) VALUES ('1', 'comitato locale di prova', NULL, '1', GeomFromText('POINT(1 2)',0), '1');" | mysql -u gaia --password=$pmysql --database=gaia
+                #
+        fi
         echo "Creazione configurazione..."
         cp core/conf/database.conf.php.sample core/conf/database.conf.php
         cp core/conf/smtp.conf.php.sample core/conf/smtp.conf.php
