@@ -40,6 +40,7 @@ if [[ "$1" = "install" ]];then
         echo "Installazione dei requisiti di Gaia (puo' richiedere molto tempo)..."
         echo " "
         sudo add-apt-repository --yes ppa:ondrej/php5
+        sudo add-apt-repository --yes ppa:ondrej/mysql-5.6
         sudo apt-get update
         sudo apt-get install --yes git wget build-essential sed unzip nano php5-cli php5-common php-pear php-mail mysql-server php5-dev php5-mysql redis-server
         sudo service mysql start
