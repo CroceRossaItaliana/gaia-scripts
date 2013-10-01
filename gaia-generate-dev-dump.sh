@@ -50,7 +50,8 @@ if [[ "$1" ]];then
     echo "UPDATE anagrafica SET password = '253903f72bbb236fe1cc72dd034b4e78061d9d57' WHERE admin = 0 OR admin IS NULL"  | mysql -u root --password="$mypassword" $db
 
     echo "- Oscuro i codici fiscali..."
-    echo "UPDATE anagrafica SET codiceFiscale = CONCAT(LEFT(codiceFiscale, length(codiceFiscale)-6), 'XXXXXX') WHERE admin = 0 OR admin IS NULL"  | mysql -u root --password="$mypassword" $db
+    echo "UPDATE anagrafica SET codiceFiscale = CONCAT(LEFT(codiceFiscale, 11), 'X123X') WHERE admin = 0 OR admin IS NULL"  | mysql -u root --password="$mypassword" $db
+    echo "UPDATE anagrafica SET codiceFiscale = CONCAT('ABCDED', RIGHT(codiceFiscale, 10)) WHERE admin = 0 OR admin IS NULL"  | mysql -u root --password="$mypassword" $db
 
     echo "- Oscuro le email..."
     echo "UPDATE anagrafica SET email = CONCAT('XXX', RIGHT(email, length(email)-3)) WHERE admin = 0 OR admin IS NULL"  | mysql -u root --password="$mypassword" $db
