@@ -57,7 +57,7 @@ if [[ "$1" ]];then
     echo "UPDATE anagrafica SET email = CONCAT('XXX', RIGHT(email, length(email)-3)) WHERE admin = 0 OR admin IS NULL"  | mysql -u root --password="$mypassword" $db
     
     echo "- Oscuro i telefoni..."
-    echo "UPDATE anagrafica SET email = CONCAT('XXX', RIGHT(valore, length(valore)-3)) WHERE nome like '%cellulare%' OR nome like '%cellulareServizio%' "  | mysql -u root --password="$mypassword" $db
+    echo "UPDATE dettagliPersona SET valore = CONCAT('XXX', RIGHT(valore, length(valore)-3)) WHERE nome like '%cellulare%' OR nome like '%cellulareServizio%' "  | mysql -u root --password="$mypassword" $db
 
     echo "- Oscuro dettagli anagrafici..."
     echo "UPDATE dettagliPersona SET valore = CONCAT(nome, id) WHERE id NOT IN (SELECT id FROM anagrafica WHERE admin > 0) AND valore <> '' AND valore NOT REGEXP '[0-9]+';"  | mysql -u root --password="$mypassword" $db
