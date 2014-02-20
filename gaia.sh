@@ -42,7 +42,7 @@ if [[ "$1" = "install" ]];then
         sudo add-apt-repository --yes ppa:ondrej/php5
         sudo add-apt-repository --yes ppa:ondrej/mysql-5.6
         sudo apt-get update
-        sudo apt-get install --yes git wget build-essential sed unzip nano php5-cli php5-common php-pear php-mail mysql-server php5-dev php5-mysql redis-server
+        sudo apt-get install --yes git wget build-essential sed unzip nano php5-cli mongodb-server php5-common php-pear php-mail mysql-server php5-dev php5-mysql redis-server
         sudo service mysql start
 
         clear
@@ -85,16 +85,15 @@ if [[ "$1" = "install" ]];then
         mv phpMyAdmin-4.0.5-all-languages/ pma
         rm phpMyAdmin-4.0.5-all-languages.zip
         echo "Creazione scorciatoia PMA..."
-        #echo "alias pma='cd $location/pma; clear; echo \"phpMyAdmin (user: gaia) ===> http://localhost:8887/\"; echo " "; php -S localhost:8887'" >> ~/.bashrc
         echo "alias pma='cd $location/pma; clear; echo \"phpMyAdmin (user: gaia) ===> http://localhost:8887/\"; echo " "; php -S localhost:8887'" >> ~/.aliasgaia
 
         clear
         echo "Scaricamento dell'ultima versione di Gaia..."
         git clone https://github.com/CroceRossaCatania/gaia.git
         echo "Creazione scorciatoia Gaia..."
-        #echo "alias gaia='cd $location/gaia; clear; echo \"APRI ===> http://localhost:8888/\"; php -S localhost:8888'" >> ~/.bashrc
-        echo "alias gaia='cd $location/gaia; clear; echo \"APRI ===> http://localhost:8888/\"; php -S localhost:8888'" >> ~/.aliasgaia
+        echo "alias gaia='cd $location/gaia; clear; echo \"APRI ===> http://0.0.0.0:8888/\"; php -S 0.0.0.0:8888'" >> ~/.aliasgaia
         source ~/.bashrc
+        source ~/.aliasgaia
 
         clear
         echo "Installazione del database di Gaia..."
@@ -107,7 +106,7 @@ if [[ "$1" = "install" ]];then
         echo "GRANT ALL ON gaia.* TO gaia@localhost IDENTIFIED BY '$pmysql';" | mysql -u root --password="$pmysql"
         echo "FLUSH PRIVILEGES;" | mysql -u root --password="$pmysql"
         echo "Importazione database..."
-        cat core/conf/gaia.sql | mysql -u gaia --password="$pmysql" --database=gaia
+        cat upload/setup/gaia.sql | mysql -u gaia --password="$pmysql" --database=gaia
         
         echo " "
         echo "Vuoi installare dei comitati di esempio? s/[n]"
@@ -121,17 +120,23 @@ if [[ "$1" = "install" ]];then
                 cat "INSERT INTO `gaia`.`comitati` (`id`, `nome`, `colore`, `locale`, `geo`, `principale`) VALUES ('1', 'comitato locale di prova', NULL, '1', GeomFromText('POINT(1 2)',0), '1');" | mysql -u gaia --password="$pmysql" --database=gaia
         fi
         echo "Creazione configurazione..."
-        cp core/conf/database.conf.php.sample core/conf/database.conf.php
-        cp core/conf/smtp.conf.php.sample core/conf/smtp.conf.php
-        cp core/conf/autopull.conf.php.sample core/conf/autopull.conf.php
-        echo "Configurazione del database..."
+        cp core/conf/sample/autopull.php core/conf/autopull.conf.php
+        cp core/conf/sample/cache.php core/conf/autopull.conf.php
+        cp core/conf/sample/captcha.php core/conf/captcha.conf.php
+        cp core/conf/sample/database.php core/conf/database.conf.php
+        cp core/conf/sample/generale.php core/conf/generale.conf.php
+        cp core/conf/sample/mongodb.php core/conf/mongodb.conf.php
+        cp core/conf/sample/sessioni.php core/conf/sessioni.conf.php
+        cp core/conf/sample/smtp.php core/conf/smtp.conf.php
+        echo "Configurazione del database... E di varia robina"
         sed -i 's/DATABASE_NAME/gaia/g' core/conf/database.conf.php
         sed -i 's/DATABASE_USER/gaia/g' core/conf/database.conf.php
         sed -i "s/DATABASE_PASSWORD/$pmysql/g" core/conf/database.conf.php
+        #manca configurazione captcha
 
 
         # Avvia il server per il setup su una porta diversa
-        php -S localhost:8889 > /dev/null 2>&1 # Muto!
+        php -S 0.0.0.0:8889 > /dev/null 2>&1 # Muto!
         clear
         echo "OK! Installazione di Gaia quasi completa"
         echo "Verra' ora avviato il setup di Gaia all'indirizzo"
@@ -164,7 +169,8 @@ elif [[ "$1" = "uninstall" ]];then
         rm -rf $GAIALOCATION/pma
         echo "rimuovo questa installazione di gaia"
         rm -rf $GAIALOCATION/gaia
-                
+        rmdir $GAIALOCATION
+
         echo "rimuovo gli shortcut creati in bash.rc"
         sed -i '/gaia; clear; echo \"APRI ===>/d' ~/.bashrc
         sed -i '/pma; clear; echo \"APRI ===>/d' ~/.bashrc
@@ -180,7 +186,7 @@ elif [[ "$1" = "uninstall" ]];then
 elif [[ "$1" = "start" ]];then
         gaia &
         clear
-        echo "Gaia avviato su http://localhost:8888/"
+        echo "Gaia avviato su http://0.0.0.0:8888/"
         echo "Aprire un browser? [s]/n"
         read -n 1 -s aprirebrowser
         if [[ "$aprirebrowser" != "n" ]];then
@@ -198,6 +204,18 @@ elif [[ "$1" = "startdb" ]];then
         if [[ "$aprirebrowser" != "n" ]];then
                 sensible-browser localhost:8888 &
                 sensible-browser localhost:8887 &
+        fi
+        
+elif [[ "$1" = "update" ]];then
+        echo "Sto per aggiornare da git, se si rompe tutto sono fatti tuoi"
+        echo
+        echo "Chiusura Gaia e PMA..."
+        killall php
+        echo "Vuoi proseguire? [s]/n"
+        read -n 1 -s aggiornamifortissimo
+        if [[ "$aggiornamifortissimo" != "n" ]];then
+				cd $GAIALOCATION/gaia
+				git fetch
         fi
         
 elif [[ "$1" = "stop" ]];then
