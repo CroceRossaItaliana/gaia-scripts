@@ -42,16 +42,58 @@ if [[ "$1" = "install" ]];then
         sudo add-apt-repository --yes ppa:ondrej/php5
         sudo add-apt-repository --yes ppa:ondrej/mysql-5.6
         sudo apt-get update
-        sudo apt-get install --yes git wget build-essential sed unzip nano php5-cli mongodb-server php5-common php-pear php-mail mysql-server php5-dev php5-mysql redis-server
+        sudo apt-get install --yes git wget build-essential sed unzip nano php5-cli php5-common php-pear php-mail mysql-server php5-dev php5-mysql redis-server mongodb-10gen
         sudo service mysql start
+        
+		echo "Installazione della estensione Mongo..."
+		sudo pecl install mongo > /dev/null
+
+		# Aggiungi i moduli necessari al php.ini
+		if [ -f /etc/php5/cli/php.ini ];then
+			echo "Impostazione di PHP CLI..."
+			sudo sed -i '/mongo\.so/d' /etc/php5/cli/php.ini
+			sudo -- bash -c "echo 'extension=mongo.so' >> /etc/php5/cli/php.ini"
+			sudo killall php 2> /dev/null
+		fi
+		if [ -f /etc/php5/apache2/php.ini ];then
+			echo "Impostazione del modulo PHP per Apache2..."
+			sudo sed -i '/mongo\.so/d' /etc/php5/apache2/php.ini
+			sudo -- bash -c "echo 'extension=mongo.so' >> /etc/php5/apache2/php.ini"
+			sudo service apache2 restart
+		fi
+		if [ -f /etc/php5/fpm/php.ini ];then
+			echo "Impostazione del modulo PHP5-FPM..."
+			sudo sed -i '/mongo\.so/d' /etc/php5/fpm/php.ini
+			sudo -- bash -c "echo 'extension=mongo.so' >> /etc/php5/fpm/php.ini"
+			sudo service php5-fpm restart
+		fi
 
         clear
-        echo "Installazione di REDIS (cache oggetti di Gaia)..."
-        echo " "
-        sudo pecl install http://pecl.php.net/get/redis-2.2.3.tgz
-        sudo -- bash -c "echo 'extension=redis.so' >> /etc/php5/cli/php.ini"
-        sudo -- bash -c "echo 'extension=redis.so' >> /etc/php5/apache2/php.ini"
-        sudo -- bash -c "echo 'extension=redis.so' >> /etc/php5/fpm/php.ini"
+		echo "Installazione della estensione Redis..."
+		sudo pecl install redis
+
+		if [ -f /etc/php5/cli/php.ini ];then
+			echo "Impostazione di PHP CLI..."
+			sudo sed -i '/redis\.so/d' /etc/php5/cli/php.ini
+			sudo -- bash -c "echo 'extension=redis.so' >> /etc/php5/cli/php.ini"
+			sudo killall php 2> /dev/null
+		fi
+		if [ -f /etc/php5/apache2/php.ini ];then
+			echo "Impostazione del modulo PHP per Apache2..."
+			sudo sed -i '/redis\.so/d' /etc/php5/apache2/php.ini
+			sudo -- bash -c "echo 'extension=redis.so' >> /etc/php5/apache2/php.ini"
+			sudo service apache2 restart
+		fi
+		if [ -f /etc/php5/fpm/php.ini ];then
+			echo "Impostazione del modulo PHP5-FPM..."
+			sudo sed -i '/redis\.so/d' /etc/php5/fpm/php.ini
+			sudo -- bash -c "echo 'extension=redis.so' >> /etc/php5/fpm/php.ini"
+			sudo service php5-fpm restart
+		fi
+
+		echo "Riavvio dei vari servizi..."
+		sudo service mongodb restart
+		sudo service apache2 restart
 
         clear
         echo "Configurazione di GIT..."
