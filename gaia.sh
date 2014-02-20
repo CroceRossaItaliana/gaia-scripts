@@ -127,7 +127,7 @@ if [[ "$1" = "install" ]];then
         mv phpMyAdmin-4.0.5-all-languages/ pma
         rm phpMyAdmin-4.0.5-all-languages.zip
         echo "Creazione scorciatoia PMA..."
-        echo "alias pma='cd $location/pma; clear; echo \"phpMyAdmin (user: gaia) ===> http://localhost:8887/\"; echo " "; php -S localhost:8887'" >> ~/.aliasgaia
+        echo "alias pma='cd $location/pma; clear; echo \"phpMyAdmin (user: gaia) ===> http://localhost:8887/\"; echo " "; php -S 0.0.0.0:8887'" >> ~/.aliasgaia
 
         clear
         echo "Scaricamento dell'ultima versione di Gaia..."
@@ -175,6 +175,8 @@ if [[ "$1" = "install" ]];then
         sed -i 's/DATABASE_USER/gaia/g' core/conf/database.php
         sed -i "s/DATABASE_PASSWORD/$pmysql/g" core/conf/database.php
         #manca configurazione captcha
+        
+        #sudo -- bash -c "echo '0 0 * * * /usr/bin/wget -O /dev/null https://gaia.cri.it/cronjob.php' >> /etc/cron.d/gaia"
 
 
         # Avvia il server per il setup su una porta diversa
@@ -189,6 +191,7 @@ if [[ "$1" = "install" ]];then
         echo " "
         echo "In futuro, per avviare phpMyAdmin, aprire un terminale e digitare:"
         echo "  gaia.sh startdb"
+        echo "mo devi creare un utente nella tabella anagrafica, impostare almeno il captcha, e volendo importare il dump tritato (ricorda di refreshare redis)"
         echo " "
         echo "Avvio di Gaia (setup)... Premi INVIO quando sei pronto"
         read -n 1 -s
