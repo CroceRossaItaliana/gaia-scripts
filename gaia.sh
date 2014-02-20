@@ -120,18 +120,18 @@ if [[ "$1" = "install" ]];then
                 cat "INSERT INTO `gaia`.`comitati` (`id`, `nome`, `colore`, `locale`, `geo`, `principale`) VALUES ('1', 'comitato locale di prova', NULL, '1', GeomFromText('POINT(1 2)',0), '1');" | mysql -u gaia --password="$pmysql" --database=gaia
         fi
         echo "Creazione configurazione..."
-        cp core/conf/sample/autopull.php core/conf/autopull.conf.php
-        cp core/conf/sample/cache.php core/conf/autopull.conf.php
-        cp core/conf/sample/captcha.php core/conf/captcha.conf.php
-        cp core/conf/sample/database.php core/conf/database.conf.php
-        cp core/conf/sample/generale.php core/conf/generale.conf.php
-        cp core/conf/sample/mongodb.php core/conf/mongodb.conf.php
-        cp core/conf/sample/sessioni.php core/conf/sessioni.conf.php
-        cp core/conf/sample/smtp.php core/conf/smtp.conf.php
+        cp core/conf/sample/autopull.php core/conf/autopull.php
+        cp core/conf/sample/cache.php core/conf/autopull.php
+        cp core/conf/sample/captcha.php core/conf/captcha.php
+        cp core/conf/sample/database.php core/conf/database.php
+        cp core/conf/sample/generale.php core/conf/generale.php
+        cp core/conf/sample/mongodb.php core/conf/mongodb.php
+        cp core/conf/sample/sessioni.php core/conf/sessioni.php
+        cp core/conf/sample/smtp.php core/conf/smtp.php
         echo "Configurazione del database... E di varia robina"
-        sed -i 's/DATABASE_NAME/gaia/g' core/conf/database.conf.php
-        sed -i 's/DATABASE_USER/gaia/g' core/conf/database.conf.php
-        sed -i "s/DATABASE_PASSWORD/$pmysql/g" core/conf/database.conf.php
+        sed -i 's/DATABASE_NAME/gaia/g' core/conf/database.php
+        sed -i 's/DATABASE_USER/gaia/g' core/conf/database.php
+        sed -i "s/DATABASE_PASSWORD/$pmysql/g" core/conf/database.php
         #manca configurazione captcha
 
 
