@@ -136,7 +136,7 @@ if [[ "$1" = "install" ]];then
 
 
         # Avvia il server per il setup su una porta diversa
-        php -S 0.0.0.0:8889 > /dev/null 2>&1 # Muto!
+        php -S 0.0.0.0:8889
         clear
         echo "OK! Installazione di Gaia quasi completa"
         echo "Verra' ora avviato il setup di Gaia all'indirizzo"
