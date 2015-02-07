@@ -26,8 +26,15 @@ if [[ "$1" ]];then
     echo "Dump originale: $1"
     echo " "
 
-    echo "Inserisci la password per root di MySQL: "
-    read -s mypassword
+    if [[ "$2" ]];then
+        echo "(Password di root fornita come argomento)"
+        mypassword="$2"
+        
+    else
+        echo "Inserisci la password per root di MySQL: "
+        read -s mypassword
+        
+    fi
 
     echo " Attendere..."
 
@@ -98,6 +105,6 @@ if [[ "$1" ]];then
 
 else
 
-    echo "Uso: ./gaia-generate-dev-dump.sh <dump-originale.sql>"
+    echo "Uso: ./gaia-generate-dev-dump.sh <dump-originale.sql> [<mysql-root-password>]"
 
 fi
