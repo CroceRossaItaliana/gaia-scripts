@@ -50,20 +50,23 @@ if [[ "$1" ]];then
     echo "UPDATE anagrafica SET password = '253903f72bbb236fe1cc72dd034b4e78061d9d57' WHERE admin = 0 OR admin IS NULL"  | mysql -u root --password="$mypassword" $db
 
     echo "- Oscuro i codici fiscali..."
-    echo "UPDATE anagrafica SET codiceFiscale = CONCAT(LEFT(codiceFiscale, 11), 'X123X') WHERE admin = 0 OR admin IS NULL"  | mysql -u root --password="$mypassword" $db
+    echo "UPDATE anagrafica SET codiceFiscale = CONCAT(LEFT(codiceFiscale, 10), 'X1234X') WHERE admin = 0 OR admin IS NULL"  | mysql -u root --password="$mypassword" $db
     echo "UPDATE anagrafica SET codiceFiscale = CONCAT('ABCDED', RIGHT(codiceFiscale, 10)) WHERE admin = 0 OR admin IS NULL"  | mysql -u root --password="$mypassword" $db
 
     echo "- Oscuro le email..."
-    echo "UPDATE anagrafica SET email = CONCAT('XXX', RIGHT(email, length(email)-3)) WHERE admin = 0 OR admin IS NULL"  | mysql -u root --password="$mypassword" $db
+    echo "UPDATE anagrafica SET email = CONCAT('XXXXX', RIGHT(email, length(email)-5)) WHERE admin = 0 OR admin IS NULL"  | mysql -u root --password="$mypassword" $db
     
     echo "- Oscuro i telefoni..."
-    echo "UPDATE dettagliPersona SET valore = CONCAT('XXX', RIGHT(valore, length(valore)-3)) WHERE nome like '%cellulare%' OR nome like '%cellulareServizio%' "  | mysql -u root --password="$mypassword" $db
+    echo "UPDATE dettagliPersona SET valore = CONCAT('XXXX', RIGHT(valore, length(valore)-4)) WHERE nome like '%cellulare%' OR nome like '%cellulareServizio%' "  | mysql -u root --password="$mypassword" $db
 
     echo "- Oscuro dettagli anagrafici..."
     echo "UPDATE dettagliPersona SET valore = CONCAT(nome, id) WHERE id NOT IN (SELECT id FROM anagrafica WHERE admin > 0) AND valore <> '' AND valore NOT REGEXP '[0-9]+';"  | mysql -u root --password="$mypassword" $db
 
     echo "- Oscuro il sesso..."
     echo "UPDATE anagrafica SET sesso = 0  WHERE admin = 0 OR admin IS NULL"  | mysql -u root --password="$mypassword" $db
+    
+    echo "- Oscuro la posta..."
+    echo "UPDATE email SET corpo = 'Oscurato'"  | mysql -u root --password="$mypassword" $db
 
     echo "- Cancello le sessioni..."
     echo "DELETE FROM sessioni"  | mysql -u root --password="$mypassword" $db
@@ -76,12 +79,15 @@ if [[ "$1" ]];then
     
     echo "- Cancello gli avatar..."
     echo "DELETE FROM avatar"  | mysql -u root --password="$mypassword" $db
+    
+    echo "- Cancello gli allegati..."
+    echo "DELETE FROM email_allegati"  | mysql -u root --password="$mypassword" $db
 
     echo "- Esportazione del file..."
     mysqldump -u root --password="$mypassword" $db > output.sql
 
     echo "- Compressione del dump..."
-    gzip -f output.sql
+    bzip2 --best -f output.sql
 
     echo "- Cancello il database temporaneo ($db)..."
     echo "DROP DATABASE $db" | mysql -u root --password="$mypassword"
