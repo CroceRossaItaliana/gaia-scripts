@@ -20,6 +20,8 @@
 
 clear
 
+command -v pv >/dev/null 2>&1 || { echo >&2 "Necessario 'pv' installato. Prova: sudo apt-get install --yes pv"; exit 1; }
+
 if [[ "$1" ]];then
 
     echo "==== GAIA - Generatore di DUMP fittizzio ===="
@@ -45,7 +47,7 @@ if [[ "$1" ]];then
     echo "CREATE DATABASE $db" | MYSQL_PWD=$mypassword mysql -u root 
 
     echo "- Caricamento DUMP originale in memoria..."
-    MYSQL_PWD=$mypassword mysql -u root $db < $1
+    pv $1 | MYSQL_PWD=$mypassword mysql -u root $db
 
     echo "- Oscuro i nomi..."
     echo "UPDATE anagrafica SET nome = CONCAT('Nome ', id)  WHERE admin = 0 OR admin IS NULL"  | MYSQL_PWD=$mypassword mysql -u root $db
